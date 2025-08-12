@@ -34,8 +34,8 @@ const TaskProgress = () => {
     },
   ]
 
-  const CircularProgress = ({ percentage, color, size = 100 }) => {
-    const radius = (size - 12) / 2
+  const CircularProgress = ({ percentage, color, size = 180 }) => {
+    const radius = (size - 18) / 2
     const circumference = 2 * Math.PI * radius
     const strokeDasharray = circumference
     const strokeDashoffset = circumference - (percentage / 100) * circumference
@@ -44,7 +44,7 @@ const TaskProgress = () => {
       <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="transform -rotate-90">
           {/* Background circle */}
-          <circle cx={size / 2} cy={size / 2} r={radius} fill="transparent" stroke="#e9e4f0" strokeWidth="8" />
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="transparent" stroke="#e9e4f0" strokeWidth="16" />
           {/* Progress circle */}
           <circle
             cx={size / 2}
@@ -52,66 +52,68 @@ const TaskProgress = () => {
             r={radius}
             fill="transparent"
             stroke={color}
-            strokeWidth="8"
+            strokeWidth="16"
             strokeLinecap="round"
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-normal text-gray-600">{percentage < 10 ? `0${percentage}` : percentage}%</span>
+          <span className="text-3xl font-normal text-gray-600">{percentage < 10 ? `0${percentage}` : percentage}%</span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center p-8">
+      <div className="w-full h-full flex flex-col">
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 flex-1 flex flex-col">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-full flex items-center justify-center">
-                <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+          <div className="px-12 py-8 border-b border-gray-100">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-full flex items-center justify-center">
+                <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
                 </div>
               </div>
-              <h1 className="text-lg font-normal text-gray-700">Today's Tasks Progress</h1>
+              <h1 className="text-2xl font-normal text-gray-700">Today's Tasks Progress</h1>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="px-6 py-6">
-            <div className="flex items-center justify-between">
+          <div className="flex-1 px-12 py-12 flex items-center justify-center">
+            <div className="w-full flex items-center justify-between">
               {/* Progress Items Row */}
-              <div className="flex items-center gap-8">
+              <div className="flex items-center justify-center gap-20 flex-1">
                 {taskData.map((task, index) => (
-                  <div key={index} className="flex flex-col items-center gap-3">
-                    <CircularProgress percentage={task.percentage} color={task.color} />
-                    <div className="flex items-center gap-2">
+                  <div key={index} className="flex flex-col items-center gap-6">
+                    <div className="flex items-center justify-center">
+                      <CircularProgress percentage={task.percentage} color={task.color} />
+                    </div>
+                    <div className="flex items-center justify-center gap-3">
                       <div
-                        className={`w-6 h-6 ${task.iconBg} rounded-md flex items-center justify-center ${task.iconColor}`}
+                        className={`w-10 h-10 ${task.iconBg} rounded-xl flex items-center justify-center ${task.iconColor}`}
                       >
-                        <span className="text-xs">{task.icon}</span>
+                        <span className="text-lg">{task.icon}</span>
                       </div>
-                      <span className="text-xs font-normal text-gray-600">{task.label}</span>
+                      <span className="text-lg font-normal text-gray-600 whitespace-nowrap">{task.label}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Summary Section */}
-              <div className="flex flex-col items-center gap-4 min-w-[160px]">
+              <div className="flex flex-col items-center justify-center gap-8 min-w-[280px] ml-16">
                 <div className="text-center">
-                  <div className="text-2xl font-normal text-gray-700 mb-1">3/8 hrs</div>
-                  <div className="text-xs font-normal text-gray-500 leading-relaxed">
+                  <div className="text-4xl font-normal text-gray-700 mb-4">3/8 hrs</div>
+                  <div className="text-lg font-normal text-gray-500 leading-relaxed">
                     Spent on Overall
                     <br />
                     Tasks this Day
                   </div>
                 </div>
-                <button className="text-xs font-normal text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-md transition-colors duration-200">
+                <button className="text-lg font-normal text-gray-500 hover:text-gray-700 px-8 py-3 rounded-xl transition-colors duration-200 border border-gray-200 hover:border-gray-300">
                   View All
                 </button>
               </div>
