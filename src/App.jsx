@@ -14,7 +14,7 @@ function App() {
     <>
       {/* <ForgotPassword/> */}
       {/* <PasswordReset/> */}
-      {/* <TaskProgress/> */}
+      <TaskProgress/>
     </>
     </div>
   )
