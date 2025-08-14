@@ -1,25 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import ForgotPassword from './components/forgot-password'
-import PasswordReset from './components/PasswordReset'
-import TaskProgress from './components/task-progress'
+import React from 'react';
+import TaskProgress from './components/TaskProgress';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div>
-    <>
-      {/* <ForgotPassword/> */}
-      {/* <PasswordReset/> */}
-      <TaskProgress/>
-    </>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Task Progress Dashboard
+        </h1>
+        
+        <TaskProgress />
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
-
-
+export default App;
