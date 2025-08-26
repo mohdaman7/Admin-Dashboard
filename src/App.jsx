@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import TaskProgress from './components/TaskProgress';
-import EmployeeProfile from './components/employee-profile';
-import Header from './components/header';
-import Sidebar from './components/sidebar';
+"use client"
 
+import { useState } from "react"
+import EmployeeProfile from "./components/employee-profile"
+import Header from "./components/header"
+import Sidebar from "./components/sidebar"
+import LeaveStatus from "./components/leave-status"
+import TeamMembers from "./components/team-members"
 
 function App() {
   const [selectedItem, setSelectedItem] = useState("Employee Dashboard")
@@ -38,6 +40,10 @@ function App() {
           </div>
           <div className="p-6">
             <EmployeeProfile />
+            <div className="mt-8 flex gap-6">
+              <LeaveStatus />
+              <TeamMembers />
+            </div>
           </div>
         </div>
       </div>
@@ -45,4 +51,4 @@ function App() {
   )
 }
 
-export default App;
+export default App
