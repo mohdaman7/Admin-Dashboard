@@ -1,4 +1,4 @@
-import { Mail, Phone } from "lucide-react"
+import { Mails, Phone } from "lucide-react"
 
 interface TeamMember {
   id: number
@@ -66,11 +66,11 @@ export default function TeamMembers() {
       <div className="w-full h-0.5 bg-blue-200 animate-scale-x mb-5"/>
 
       {/* Team Members List */}
-      <div className="space-y-4 overflow-y-auto" style={{ height: "calc(650px - 120px)" }}>
+      <div className="space-y-1 overflow-y-auto mt-8" style={{ height: "calc(650px - 120px)" }}>
         {teamMembers.map((member) => (
           <div
             key={member.id}
-            className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors"
+            className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors border-2"
           >
             {/* Left side - Avatar and Info */}
             <div className="flex items-center gap-3">
@@ -81,19 +81,19 @@ export default function TeamMembers() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div>
-                <h3 className="font-medium text-gray-900">{member.name}</h3>
-                <p className="text-sm text-gray-500">{member.role}</p>
+              <div className="pl-3">
+                <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
+                <p className="text-base font-medium text-gray-500">{member.role}</p>
               </div>
             </div>
 
             {/* Right side - Action Icons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-5">
               <button className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
-                <Mail className="h-4 w-4" />
+                <Mails className="h-6 w-6" />
               </button>
               <button className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
-                <Phone className="h-4 w-4" />
+                <Phone className="h-6 w-6" />
               </button>
             </div>
           </div>
