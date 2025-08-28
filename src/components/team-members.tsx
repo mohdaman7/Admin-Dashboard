@@ -12,25 +12,25 @@ const teamMembers: TeamMember[] = [
     id: 1,
     name: "Karan Malhotra",
     role: "Python Developers",
-    avatar: "/public/profile-img-6.jpg",
+    avatar: "/profile-img-6.jpg",
   },
   {
     id: 2,
     name: "Amal Ahammed",
     role: "React Developers",
-    avatar: "/public/profile-img-6.jpg",
+    avatar: "/profile-img-6.jpg",
   },
   {
     id: 3,
     name: "Priya Singh",
     role: "MERN Stack Developers",
-    avatar: "/public/profile-img-6.jpg",
+    avatar: "/profile-img-6.jpg",
   },
   {
     id: 4,
     name: "Shamnas",
     role: "Flutter Developers",
-    avatar: "/public/profile-img-6.jpg",
+    avatar: "/profile-img-6.jpg",
   },
   {
     id: 5,
@@ -42,7 +42,7 @@ const teamMembers: TeamMember[] = [
     id: 6,
     name: "Neha Kulkarni",
     role: "Python Developers",
-    avatar: "/public/profile-img-6.jpg",
+    avatar: "/profile-img-6.jpg",
   },
 ]
 
@@ -102,3 +102,5 @@ export default function TeamMembers() {
     </div>
   )
 }
+
+

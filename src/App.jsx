@@ -1,11 +1,10 @@
-"use client"
-
 import { useState } from "react"
 import EmployeeProfile from "./components/employee-profile"
 import Header from "./components/header"
 import Sidebar from "./components/sidebar"
 import LeaveStatus from "./components/leave-status"
 import TeamMembers from "./components/team-members"
+import AttendanceLogTable from "./components/AttendanceLogTable"
 
 function App() {
   const [selectedItem, setSelectedItem] = useState("Employee Dashboard")
@@ -43,6 +42,9 @@ function App() {
             <div className="mt-8 flex gap-6">
               <LeaveStatus />
               <TeamMembers />
+            </div>
+            <div className="mt-8">
+              <AttendanceLogTable />
             </div>
           </div>
         </div>

@@ -7,44 +7,61 @@ export default function LeaveStatus() {
     {
       id: "employee",
       name: "Employee",
-      position: { left: "4rem", top: "6rem" },
-      status: "active",
+      position: { left: "4rem", top: "4rem" },
+      status: "approved",
       image: "/public/profile-img-6.jpg",
       fallback: "E",
+      labelPosition: "top",
     },
     {
       id: "teamlead",
       name: "Team Lead",
-      position: { left: "16rem", top: "14rem" },
-      status: "active",
+      position: { left: "15.5rem", top: "14rem" },
+      status: "approved",
       image: "/public/profile-img-6.jpg",
       fallback: "TL",
+      labelPosition: "bottom",
     },
     {
       id: "projectlead",
       name: "Project Lead",
-      position: { left: "50%", top: "3rem", transform: "translateX(-50%)" },
+      position: { left: "47%", top: "0.5rem", transform: "translateX(-50%)" },
       status: "pending",
       image: "/public/profile-img-6.jpg",
       fallback: "PL",
+      labelPosition: "top",
     },
     {
       id: "hr",
       name: "HR",
-      position: { right: "15rem", top: "13.3rem" },
+      position: { right: "14.2rem", top: "13.3rem" },
       status: "pending",
       image: "/public/profile-img-6.jpg",
       fallback: "HR",
+      labelPosition: "bottom",
     },
     {
       id: "ceo",
       name: "CEO",
-      position: { right: "4rem", top: "6rem" },
+      position: { right: "4.2rem", top: "4rem" },
       status: "pending",
       image: "/public/profile-img-6.jpg",
       fallback: "CEO",
+      labelPosition: "top",
     },
   ]
+
+  const lineConnections = [
+    { src: "/Vector 3.jpg", green: false, style: { left: "94px", top: "140px", width: "180px", height: "120px" } },
+    { src: "/Vector 4.jpg", srcGreen: "/Vector 4_green.jpg", from: 1, to: 2, style: { left: "305px", top: "55px", width: "180px", height: "200px" } },
+    { src: "/Vector 5.jpg", srcGreen: "/Vector 5_green.jpg", from: 2, to: 3, style: { left: "480px", top: "60px", width: "180px", height: "200px" } },
+    { src: "/Vector 6.jpg", srcGreen: "/Vector 6_green.jpg", from: 3, to: 4, style: { left: "655px", top: "125px", width: "180px", height: "145px" } },
+  ]
+
+  const lastActiveRoleIndex = roles.reduce(
+    (acc, role, idx) => role.status === "approved" ? idx : acc,
+    -1
+  )
 
   return (
     <div
@@ -55,59 +72,31 @@ export default function LeaveStatus() {
         padding: "16px",
       }}
     >
-      <div className="mb-8 animate-fade-in">
+      <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-800 mb-2 p-4 pl-5">Leave Status</h1>
-        <div className="ml-5 w-11/12 h-0.5 bg-blue-200 animate-scale-x" />
+        <div className="ml-5 w-11/12 h-0.5 bg-blue-200" />
       </div>
 
       <div className="relative mb-8" style={{ height: "280px" }}>
+        {/* No animation classes on lines */}
+        <img src="/Vector 3.jpg" alt="Employee to Team Lead connection" className="absolute" style={lineConnections[0].style} />
         <img
-          src="/Vector 3.jpg"
-          alt="Employee to Team Lead connection"
-          className="absolute animate-fade-in"
-          style={{
-            left: "90px",
-            top: "160px",
-            width: "180px",
-            height: "80px",
-            animationDelay: "0.5s",
-          }}
-        />
-        <img
-          src="/Vector 4.jpg"
+          src={lastActiveRoleIndex >= 2 ? lineConnections[1].srcGreen : lineConnections[1].src}
           alt="Team Lead to Project Lead connection"
-          className="absolute animate-fade-in"
-          style={{
-            left: "305px",
-            top: "55px",
-            width: "180px",
-            height: "200px",
-            animationDelay: "1s",
-          }}
+          className="absolute"
+          style={lineConnections[1].style}
         />
         <img
-          src="/Vector 5.jpg"
+          src={lastActiveRoleIndex >= 3 ? lineConnections[2].srcGreen : lineConnections[2].src}
           alt="Project Lead to HR connection"
-          className="absolute animate-fade-in"
-          style={{
-            left: "480px",
-            top: "60px",
-            width: "160px",
-            height: "170px",
-            animationDelay: "1.5s",
-          }}
+          className="absolute"
+          style={lineConnections[2].style}
         />
         <img
-          src="/Vector 6.jpg"
+          src={lastActiveRoleIndex >= 4 ? lineConnections[3].srcGreen : lineConnections[3].src}
           alt="HR to CEO connection"
-          className="absolute animate-fade-in"
-          style={{
-            left: "655px",
-            top: "125px",
-            width: "155px",
-            height: "145px",
-            animationDelay: "2s",
-          }}
+          className="absolute"
+          style={lineConnections[3].style}
         />
 
         {roles.map((role, index) => (
@@ -122,10 +111,20 @@ export default function LeaveStatus() {
             onMouseLeave={() => setHoveredRole(null)}
           >
             <div className="flex flex-col items-center cursor-pointer">
+              {role.labelPosition === "top" && (
+                <span
+                  className={`mb-2 text-base font-semibold transition-all duration-300 ${
+                    hoveredRole === role.id ? "text-blue-600 transform -translate-y-0.5" : "text-gray-700"
+                  }`}
+                >
+                  {role.name}
+                </span>
+              )}
+
               <div className="relative leave-avatar-wrapper">
                 <div
                   className={`leave-avatar
-                    ${role.status === "active" ? "leave-avatar-active" : ""}
+                    ${role.status === "approved" ? "leave-avatar-approved" : ""}
                     ${role.status === "pending" ? "leave-avatar-pending" : ""}
                     ${hoveredRole === role.id ? "shadow-xl" : ""}
                   `}
@@ -137,19 +136,23 @@ export default function LeaveStatus() {
                     onError={(e) => {
                       e.target.style.display = "none"
                       e.target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xs font-medium ${
-                        role.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                        role.status === "approved" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
                       }">${role.fallback}</div>`
                     }}
                   />
                 </div>
               </div>
-              <span
-                className={`mt-2 text-base font-semibold transition-all duration-300 ${
-                  hoveredRole === role.id ? "text-blue-600 transform -translate-y-0.5" : "text-gray-700"
-                }`}
-              >
-                {role.name}
-              </span>
+
+              {/* Label below */}
+              {role.labelPosition === "bottom" && (
+                <span
+                  className={`mt-2 text-base font-semibold transition-all duration-300 ${
+                    hoveredRole === role.id ? "text-blue-600 transform -translate-y-0.5" : "text-gray-700"
+                  }`}
+                >
+                  {role.name}
+                </span>
+              )}
             </div>
           </div>
         ))}
@@ -206,7 +209,7 @@ export default function LeaveStatus() {
         }
 
         .leave-avatar-wrapper {
-          padding: 6px; /* space for glow/shadow */
+          padding: 6px;
           background: transparent;
         }
         .leave-avatar {
@@ -221,7 +224,7 @@ export default function LeaveStatus() {
           transition: box-shadow 0.3s, border 0.3s;
           border: 2.5px solid #fff;
         }
-        .leave-avatar-active {
+        .leave-avatar-approved {
           box-shadow: 0 0 18px 6px #6EFF86;
         }
         .leave-avatar-pending {
