@@ -1,5 +1,11 @@
 import { useState } from "react"
 import { BiSearchAlt2 } from "react-icons/bi";
+import { 
+  FaCheckCircle, 
+  FaExclamationCircle, 
+  FaTimesCircle, 
+  FaClock 
+} from "react-icons/fa";
 
 const mockData = [
   {
@@ -102,7 +108,6 @@ export default function AttendanceLogTable() {
       className="bg-white rounded-[10px] shadow-sm min-h-full my-16"
       style={{
         width: "1469px",
-        minHeight: "872px",
         borderRadius: "10px",
         background: "#FFF",
       }}
@@ -167,14 +172,14 @@ export default function AttendanceLogTable() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto px-6 pb-6">
+      <div className="overflow-x-auto px-6 pb-6 -mx-6">
         <table className="w-full text-sm font-medium">
           <thead>
-            <tr className="bg-[#FAFAFA] text-[#4D4D4D] font-bold text-base border-b border-[#F3F3F3]">
-              <th className="py-4.3 px-3 text-left" style={{ width: "124px" }}>
+            <tr className="bg-[#F4F4F4] text-[#4D4D4D] font-bold text-base border-b border-[#F3F3F3]">
+              <th className="py-4.3 px-3 pl-10 text-left" style={{ width: "124px" }}>
                 Date
               </th>
-              <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
+              <th className="py-5 px-2 text-left" style={{ width: "100px" }}>
                 Check In
               </th>
               <th className="py-5 px-3 text-left" style={{ width: "87px" }}>
@@ -186,13 +191,13 @@ export default function AttendanceLogTable() {
               <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
                 Break
               </th>
-              <th className="py-5 px-3 text-left" style={{ width: "87px" }}>
+              <th className="py-5 px-2 text-left" style={{ width: "87px" }}>
                 Late
               </th>
-              <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
+              <th className="py-5 px-2 text-left" style={{ width: "100px" }}>
                 Overtime
               </th>
-              <th className="py-5 px-3 text-left" style={{ width: "140px" }}>
+              <th className="py-5 px-2 text-left" style={{ width: "140px" }}>
                 Production Hours
               </th>
               <th className="py-5 px-3 text-left" style={{ width: "76px" }}>
@@ -203,7 +208,7 @@ export default function AttendanceLogTable() {
           <tbody>
             {mockData.map((row, i) => (
               <tr key={i} className="border-b last:border-b-0 border-[#F3F3F3] text-base">
-                <td className="py-4 px-3 text-[#535353]">{row.date}</td>
+                <td className="py-4 px-3 pl-10 text-[#535353]">{row.date}</td>
                 <td className="py-4 px-3 text-[#535353]">{row.checkIn}</td>
                 <td className="py-4 px-3 font-semibold">
                   <span className={statusColors[row.status] || "text-[#B8B8B8]"}>{row.status}</span>
@@ -217,52 +222,16 @@ export default function AttendanceLogTable() {
                     className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 bord ${pillColors[row.productionHours.color]}`}
                   >
                     {row.productionHours.color === "green" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#19C773" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#19C773" strokeWidth="2" fill="none" />
-                        <path
-                          d="M9.5 12.5l2 2 3-4"
-                          stroke="#19C773"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <FaCheckCircle className="w-4 h-4" color="#19C773" />
                     )}
                     {row.productionHours.color === "blue" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#37B6E9" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#37B6E9" strokeWidth="2" fill="none" />
-                        <path
-                          d="M12 8v4l2 2"
-                          stroke="#37B6E9"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <FaClock className="w-4 h-4" color="#37B6E9" />
                     )}
                     {row.productionHours.color === "red" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#FF3A3A" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#FF3A3A" strokeWidth="2" fill="none" />
-                        <path
-                          d="M15 9l-6 6M9 9l6 6"
-                          stroke="#FF3A3A"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <FaTimesCircle className="w-4 h-4" color="#FF3A3A" />
                     )}
                     {row.productionHours.color === "orange" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#FFA353" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#FFA353" strokeWidth="2" fill="none" />
-                        <path
-                          d="M12 8v4h4"
-                          stroke="#FFA353"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <FaExclamationCircle className="w-4 h-4" color="#FFA353" />
                     )}
                     <span className="ml-1">{row.productionHours.value} Hrs</span>
                   </span>
