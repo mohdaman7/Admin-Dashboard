@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { BiSearchAlt2 } from "react-icons/bi";
 
 const mockData = [
   {
@@ -81,118 +82,200 @@ const mockData = [
 ]
 
 const statusColors = {
-  Present: "text-green-500",
-  Absent: "text-red-500",
-  Late: "text-orange-500",
+  Present: "text-[#19C773]",
+  Absent: "text-[#FF3A3A]",
+  Late: "text-[#FFA353]",
 }
 
 const pillColors = {
-  green: "bg-green-50 text-green-600 border border-green-300",
-  blue: "bg-blue-50 text-blue-500 border border-blue-200",
-  red: "bg-red-50 text-red-500 border border-red-200",
-  orange: "bg-orange-50 text-orange-500 border border-orange-200",
+  green: "bg-[#E0FFF1] text-[#03C96F] border border-[#C7F2DD]",
+  blue: "bg-[#E0F6FF] text-[#43C8FF] border border-[#BEE6F8]",
+  red: "bg-[#FFE4E4] text-[#F11515] border border-[#FFDFDF]",
+  orange: "bg-[#FFEFE4] text-[#FD7F20] border border-[#FFE1C2]",
 }
 
 export default function AttendanceLogTable() {
   const [search, setSearch] = useState("")
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div
+      className="bg-white rounded-[10px] shadow-sm min-h-full my-16"
+      style={{
+        width: "1469px",
+        minHeight: "872px",
+        borderRadius: "10px",
+        background: "#FFF",
+      }}
+    >
       {/* Top controls */}
-      <div className="flex flex-col md:flex-row md:items-center md:gap-4 gap-3 mb-4">
+      <div className="flex items-center gap-4 mb-6 px-10 pt-10">
         {/* Search */}
-        <div className="flex items-center border border-gray-300 rounded-md bg-white px-2 py-1 w-full md:w-auto">
-          <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-2-2"/></svg>
+        <div className="flex items-center border border-[#E1E1E1] rounded-md bg-[#FFFFFF] px-2 py-1.5 w-[273px] h-[40px] mr-14">
+          <BiSearchAlt2 className="w-5 h-5 text-[#B8B8B8] mr-1" />
           <input
-            className="bg-transparent focus:outline-none w-full"
+            className="bg-transparent focus:outline-none flex-1 placeholder:text-[#B8B8B8] text-xs text-[#535353] min-w-0"
             placeholder="Search here"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="ml-2 px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded border border-gray-300 hover:bg-gray-200">Search</button>
+          <button className="ml-1 px-2 py-0.5 bg-[#EAECEC] text-[#4D4D4D] text-xs rounded border border-[#E1E1E1] hover:bg-gray-50 transition-colors">
+            Search
+          </button>
         </div>
+
         {/* Date Range */}
-        <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-1 min-w-[210px]">
-          <span className="text-gray-500 text-xs md:text-sm">07/09/2025 - 07/08/2024</span>
-          <svg className="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        <div className="flex items-center justify-between border border-[#E1E1E1] rounded-md bg-[#FFFFFF] px-4 py-3 min-w-[320px] h-[50px] cursor-pointer hover:bg-gray-50 transition-colors">
+          <span className="text-[#535353] text-lg font-poppins">07/09/2025 - 07/09/2024</span>
+          <svg
+            className="w-4 h-4 text-[#B8B8B8] ml-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
+
         {/* Sort By */}
-        <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-1 min-w-[180px]">
-          <span className="text-gray-500 text-xs md:text-sm">Sort By : Last 7 Days</span>
-          <svg className="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        <div className="flex items-center justify-between border border-[#E1E1E1] rounded-md bg-[#FFFFFF] px-4 py-3 min-w-[320px] h-[50px] cursor-pointer hover:bg-gray-50 transition-colors">
+          <span className="text-[#535353] text-lg font-poppins">Sort By : Last 7 Days</span>
+          <svg
+            className="w-4 h-4 text-[#B8B8B8] ml-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
+
         {/* Status */}
-        <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-1 min-w-[150px]">
-          <span className="text-gray-500 text-xs md:text-sm">Select Status</span>
-          <svg className="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        <div className="flex items-center justify-between border border-[#E1E1E1] rounded-md bg-[#FFFFFF] px-4 py-3 min-w-[320px] h-[50px] cursor-pointer hover:bg-gray-50 transition-colors">
+          <span className="text-[#535353] text-lg font-poppins">Select Status</span>
+          <svg
+            className="w-4 h-4 text-[#B8B8B8] ml-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto px-6 pb-6">
+        <table className="w-full text-sm font-medium">
           <thead>
-            <tr className="bg-gray-50 text-gray-400 font-semibold text-xs">
-              <th className="py-3 px-2 text-left min-w-[90px]">Date</th>
-              <th className="py-3 px-2 text-left min-w-[80px]">Check In</th>
-              <th className="py-3 px-2 text-left min-w-[70px]">Status</th>
-              <th className="py-3 px-2 text-left min-w-[92px]">Check Out</th>
-              <th className="py-3 px-2 text-left min-w-[60px]">Break</th>
-              <th className="py-3 px-2 text-left min-w-[40px]">Late</th>
-              <th className="py-3 px-2 text-left min-w-[60px]">Overtime</th>
-              <th className="py-3 px-2 text-left min-w-[140px]">Production Hours</th>
-              <th className="py-3 px-2 text-left min-w-[70px]">Edit</th>
+            <tr className="bg-[#FAFAFA] text-[#4D4D4D] font-bold text-base border-b border-[#F3F3F3]">
+              <th className="py-4.3 px-3 text-left" style={{ width: "124px" }}>
+                Date
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
+                Check In
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "87px" }}>
+                Status
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "124px" }}>
+                Check Out
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
+                Break
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "87px" }}>
+                Late
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
+                Overtime
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "140px" }}>
+                Production Hours
+              </th>
+              <th className="py-5 px-3 text-left" style={{ width: "76px" }}>
+                Edit
+              </th>
             </tr>
           </thead>
           <tbody>
             {mockData.map((row, i) => (
-              <tr key={i} className="text-gray-700 border-b last:border-b-0">
-                <td className="py-3 px-2">{row.date}</td>
-                <td className="py-3 px-2">{row.checkIn}</td>
-                <td className="py-3 px-2 font-semibold">
-                  <span className={statusColors[row.status] || "text-gray-500"}>{row.status}</span>
+              <tr key={i} className="border-b last:border-b-0 border-[#F3F3F3] text-base">
+                <td className="py-4 px-3 text-[#535353]">{row.date}</td>
+                <td className="py-4 px-3 text-[#535353]">{row.checkIn}</td>
+                <td className="py-4 px-3 font-semibold">
+                  <span className={statusColors[row.status] || "text-[#B8B8B8]"}>{row.status}</span>
                 </td>
-                <td className="py-3 px-2">{row.checkOut}</td>
-                <td className="py-3 px-2">{row.break}</td>
-                <td className="py-3 px-2">{row.late}</td>
-                <td className="py-3 px-2">{row.overtime}</td>
-                <td className="py-3 px-2">
+                <td className="py-4 px-3 text-[#535353]">{row.checkOut}</td>
+                <td className="py-4 px-3 text-[#535353]">{row.break}</td>
+                <td className="py-4 px-3 text-[#535353]">{row.late}</td>
+                <td className="py-4 px-3 text-[#535353]">{row.overtime}</td>
+                <td className="py-4 px-3">
                   <span
-                    className={`inline-flex items-center gap-1 text-xs rounded-full font-semibold px-3 py-1 ${pillColors[row.productionHours.color]}`}
+                    className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 bord ${pillColors[row.productionHours.color]}`}
                   >
                     {row.productionHours.color === "green" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#2ECC71" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#2ECC71" strokeWidth="2" fill="none"/>
-                        <path d="M9.5 12.5l2 2 3-4" stroke="#2ECC71" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg className="w-4 h-4" fill="none" stroke="#19C773" strokeWidth="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="#19C773" strokeWidth="2" fill="none" />
+                        <path
+                          d="M9.5 12.5l2 2 3-4"
+                          stroke="#19C773"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                     {row.productionHours.color === "blue" && (
                       <svg className="w-4 h-4" fill="none" stroke="#37B6E9" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#37B6E9" strokeWidth="2" fill="none"/>
-                        <path d="M12 8v4l2 2" stroke="#37B6E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="#37B6E9" strokeWidth="2" fill="none" />
+                        <path
+                          d="M12 8v4l2 2"
+                          stroke="#37B6E9"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                     {row.productionHours.color === "red" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#FF5757" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#FF5757" strokeWidth="2" fill="none"/>
-                        <path d="M15 9l-6 6M9 9l6 6" stroke="#FF5757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg className="w-4 h-4" fill="none" stroke="#FF3A3A" strokeWidth="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="#FF3A3A" strokeWidth="2" fill="none" />
+                        <path
+                          d="M15 9l-6 6M9 9l6 6"
+                          stroke="#FF3A3A"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                     {row.productionHours.color === "orange" && (
-                      <svg className="w-4 h-4" fill="none" stroke="#FFA500" strokeWidth="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="#FFA500" strokeWidth="2" fill="none"/>
-                        <path d="M12 8v4h4" stroke="#FFA500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg className="w-4 h-4" fill="none" stroke="#FFA353" strokeWidth="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="#FFA353" strokeWidth="2" fill="none" />
+                        <path
+                          d="M12 8v4h4"
+                          stroke="#FFA353"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
-                    <span>
-                      {row.productionHours.value} Hrs
-                    </span>
+                    <span className="ml-1">{row.productionHours.value} Hrs</span>
                   </span>
                 </td>
-                <td className="py-3 px-2">
+                <td className="py-3 px-1">
                   {row.edit && (
-                    <a href="#" className="text-sky-500 text-sm hover:underline font-semibold flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="#37B6E9" strokeWidth={2} viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M16.5 3.5a2.121 2.121 0 113 3l-12.5 12.5-4 1 1-4 12.5-12.5z"/></svg>
+                    <a
+                      href="#"
+                      className="text-[#00A0E3] text-sm hover:underline font-semibold flex items-center gap-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="#37B6E9" strokeWidth={2} viewBox="0 0 24 24">
+                        <path d="M15.232 5.232l3.536 3.536M16.5 3.5a2.121 2.121 0 113 3l-12.5 12.5-4 1 1-4 12.5-12.5z" />
+                      </svg>
                       Edit Log
                     </a>
                   )}
