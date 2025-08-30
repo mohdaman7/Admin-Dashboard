@@ -63,7 +63,7 @@ export default function TeamMembers() {
       </div>
 
       {/* Divider */}
-      <div className="w-full h-0.5 bg-blue-200 animate-scale-x mb-5"/>
+      <div className="w-full h-0.5 bg-blue-200 animate-scale-x mb-5" />
 
       {/* Team Members List */}
       <div className="space-y-1 overflow-y-auto mt-8" style={{ height: "calc(650px - 120px)" }}>
@@ -102,5 +102,3 @@ export default function TeamMembers() {
     </div>
   )
 }
-
-

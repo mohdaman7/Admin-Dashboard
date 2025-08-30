@@ -1,11 +1,6 @@
 import { useState } from "react"
-import { BiSearchAlt2 } from "react-icons/bi";
-import { 
-  FaCheckCircle, 
-  FaExclamationCircle, 
-  FaTimesCircle, 
-  FaClock 
-} from "react-icons/fa";
+import { BiSearchAlt2 } from "react-icons/bi"
+import { FaCheckCircle, FaExclamationCircle, FaTimesCircle, FaClock } from "react-icons/fa"
 
 const mockData = [
   {
@@ -112,7 +107,6 @@ export default function AttendanceLogTable() {
         background: "#FFF",
       }}
     >
-      {/* Top controls */}
       <div className="flex items-center gap-4 mb-6 px-10 pt-10">
         {/* Search */}
         <div className="flex items-center border border-[#E1E1E1] rounded-md bg-[#FFFFFF] px-2 py-1.5 w-[273px] h-[40px] mr-14">
@@ -221,15 +215,9 @@ export default function AttendanceLogTable() {
                   <span
                     className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 bord ${pillColors[row.productionHours.color]}`}
                   >
-                    {row.productionHours.color === "green" && (
-                      <FaCheckCircle className="w-4 h-4" color="#19C773" />
-                    )}
-                    {row.productionHours.color === "blue" && (
-                      <FaClock className="w-4 h-4" color="#37B6E9" />
-                    )}
-                    {row.productionHours.color === "red" && (
-                      <FaTimesCircle className="w-4 h-4" color="#FF3A3A" />
-                    )}
+                    {row.productionHours.color === "green" && <FaCheckCircle className="w-4 h-4" color="#19C773" />}
+                    {row.productionHours.color === "blue" && <FaClock className="w-4 h-4" color="#37B6E9" />}
+                    {row.productionHours.color === "red" && <FaTimesCircle className="w-4 h-4" color="#FF3A3A" />}
                     {row.productionHours.color === "orange" && (
                       <FaExclamationCircle className="w-4 h-4" color="#FFA353" />
                     )}

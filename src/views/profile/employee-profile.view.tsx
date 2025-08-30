@@ -1,5 +1,5 @@
-import { BsPersonGear } from "react-icons/bs";
-import { FaFingerprint } from "react-icons/fa";
+import { BsPersonGear } from "react-icons/bs"
+import { FaFingerprint } from "react-icons/fa"
 
 const EmployeeProfile = () => {
   return (
@@ -9,10 +9,7 @@ const EmployeeProfile = () => {
     >
       <div className="flex flex-row h-full ">
         {/* Profile image and buttons column */}
-        <div
-          className="flex flex-col items-center"
-          style={{ width: 220, marginTop: 30, marginLeft: 30 }}
-        >
+        <div className="flex flex-col items-center" style={{ width: 220, marginTop: 30, marginLeft: 30 }}>
           <img
             src="/profile-img-6.jpg"
             alt="Employee Profile"
@@ -23,7 +20,7 @@ const EmployeeProfile = () => {
             {/* Leave Today Button - Fingerprint icon, NO background, black text, border, black icon */}
             <button
               className="flex items-center justify-center gap-2 w-full py-3 rounded text-black text-[15px] font-medium transition bg-transparent hover:bg-gray-100"
-              style={{ boxShadow: 'none', fontWeight: 500 }}
+              style={{ boxShadow: "none", fontWeight: 500 }}
             >
               <FaFingerprint className="w-5 h-5 text-cyan-500" />
               Leave Today
@@ -41,13 +38,8 @@ const EmployeeProfile = () => {
           {/* Name and info */}
           <div className="flex flex-col mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-[24px] font-semibold text-black">
-                Amal Ahammed
-              </span>
-              <span
-                className="text-[13px] font-medium px-2 py-0.5 rounded"
-                style={{ color: '#94C21A' }}
-              >
+              <span className="text-[24px] font-semibold text-black">Amal Ahammed</span>
+              <span className="text-[13px] font-medium px-2 py-0.5 rounded" style={{ color: "#94C21A" }}>
                 WFO
               </span>
             </div>
@@ -67,7 +59,10 @@ const EmployeeProfile = () => {
               {[
                 ["Ph. No", "+91 98472 34567"],
                 ["Emp. No", "+91 96334 11223"],
-                ["Addr.", "Noor Manzil, Near Juma Masjid, Puthanpally Road, P.O. Kuttichira, Kozhikode – 673001, Kerala, India"],
+                [
+                  "Addr.",
+                  "Noor Manzil, Near Juma Masjid, Puthanpally Road, P.O. Kuttichira, Kozhikode – 673001, Kerala, India",
+                ],
                 ["Gen.", "Male"],
                 ["D.O.B.", "12/05/2002"],
                 ["Nat.", "Indian"],
@@ -75,7 +70,12 @@ const EmployeeProfile = () => {
               ].map(([label, value]) => (
                 <div className="flex items-start" key={label}>
                   <span className="w-24 font-semibold text-black flex-shrink-0">{label}</span>
-                  <span className="mx-2 flex-shrink-0" style={{ lineHeight: "24px", minWidth: 10, textAlign: 'center' }}>:</span>
+                  <span
+                    className="mx-2 flex-shrink-0"
+                    style={{ lineHeight: "24px", minWidth: 10, textAlign: "center" }}
+                  >
+                    :
+                  </span>
                   <span className="text-black">{value}</span>
                 </div>
               ))}
@@ -92,7 +92,12 @@ const EmployeeProfile = () => {
               ].map(([label, value]) => (
                 <div className="flex items-start" key={label}>
                   <span className="w-36 font-semibold text-black flex-shrink-0">{label}</span>
-                  <span className="mx-2 flex-shrink-0" style={{ lineHeight: "24px", minWidth: 10, textAlign: 'center' }}>:</span>
+                  <span
+                    className="mx-2 flex-shrink-0"
+                    style={{ lineHeight: "24px", minWidth: 10, textAlign: "center" }}
+                  >
+                    :
+                  </span>
                   <span className="text-black">{value}</span>
                 </div>
               ))}
@@ -109,7 +114,12 @@ const EmployeeProfile = () => {
               ].map(([label, value]) => (
                 <div className="flex items-start" key={label}>
                   <span className="w-36 font-semibold text-black flex-shrink-0">{label}</span>
-                  <span className="mx-2 flex-shrink-0" style={{ lineHeight: "24px", minWidth: 10, textAlign: 'center' }}>:</span>
+                  <span
+                    className="mx-2 flex-shrink-0"
+                    style={{ lineHeight: "24px", minWidth: 10, textAlign: "center" }}
+                  >
+                    :
+                  </span>
                   <span className="text-black">{value}</span>
                 </div>
               ))}
@@ -122,6 +132,3 @@ const EmployeeProfile = () => {
 }
 
 export default EmployeeProfile
-
-
-

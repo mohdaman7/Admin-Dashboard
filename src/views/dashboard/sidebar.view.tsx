@@ -1,4 +1,3 @@
-"use client"
 import { FiGrid, FiClock, FiFileText, FiCheckSquare, FiTrendingUp, FiZap } from "react-icons/fi"
 
 const Sidebar = ({ selectedItem, onItemClick }) => {
