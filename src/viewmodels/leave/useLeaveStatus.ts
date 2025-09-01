@@ -37,7 +37,7 @@ export function useLeaveStatus() {
         id: "hr",
         name: "HR",
         position: { right: "14.2rem", top: "13.3rem" },
-        status: "approved",
+        status: "pending",
         image: "/public/profile-img-6.jpg",
         fallback: "HR",
         labelPosition: "bottom",

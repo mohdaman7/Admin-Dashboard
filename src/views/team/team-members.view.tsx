@@ -81,6 +81,8 @@ export default function TeamMembers() {
                   className="w-full h-full object-cover"
                 />
               </div>
+              
+              
               <div className="pl-3">
                 <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
                 <p className="text-base font-medium text-gray-500">{member.role}</p>

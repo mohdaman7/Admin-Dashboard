@@ -97,6 +97,139 @@ const pillColors = {
 
 export default function AttendanceLogTable() {
   const [search, setSearch] = useState("")
+  const [rows, setRows] = useState(() => mockData.map((r) => ({ ...r, edit: true })))
+
+  const START_TIME = "09:31 AM"
+
+  const toMinutes = (time: string) => {
+    if (!time || time === "--") return null
+    const [hhmm, meridiem] = time.split(" ")
+    let [h, m] = hhmm.split(":").map((n) => Number.parseInt(n, 10))
+    if (meridiem === "PM" && h !== 12) h += 12
+    if (meridiem === "AM" && h === 0) h = 0
+    return h * 60 + m
+  }
+
+  type Meridiem = "AM" | "PM"
+  type TimeForm = { hour: string; min: string; meridiem: Meridiem }
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editIndex, setEditIndex] = useState<number | null>(null)
+  const [checkInForm, setCheckInForm] = useState<TimeForm>({ hour: "09", min: "00", meridiem: "AM" })
+  const [checkOutForm, setCheckOutForm] = useState<TimeForm>({ hour: "06", min: "00", meridiem: "PM" })
+
+  const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
+  const pad2 = (v: number | string) => String(v).padStart(2, "0")
+
+  const parseTimeToForm = (time?: string | null): TimeForm => {
+    if (!time || time === "--") return { hour: "09", min: "00", meridiem: "AM" }
+    const [hhmm, meridiem] = time.split(" ")
+    const [h, m] = hhmm.split(":").map((n) => Number.parseInt(n, 10))
+    const hour12 = ((h + 11) % 12) + 1 // convert 0-23 to 1-12
+    return { hour: pad2(hour12), min: pad2(m), meridiem: (meridiem as Meridiem) || "AM" }
+  }
+
+  const formatForm = (t: TimeForm) =>
+    `${pad2(clamp(Number(t.hour) || 0, 1, 12))}:${pad2(clamp(Number(t.min) || 0, 0, 59))} ${t.meridiem}`
+
+  const openEditModal = (index: number) => {
+    const r = rows[index]
+    setEditIndex(index)
+    setCheckInForm(parseTimeToForm(r.checkIn))
+    setCheckOutForm(parseTimeToForm(r.checkOut))
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setEditIndex(null)
+  }
+
+  const lateLabel = (minsLate: number) => {
+    if (minsLate <= 0) return "--"
+    const h = Math.floor(minsLate / 60)
+    const m = minsLate % 60
+    if (m === 0) return `${String(h).padStart(2, "0")}h`
+    if (h === 0) return `${m}m`
+    return `${String(h).padStart(2, "0")}h ${m}m`
+  }
+
+  const parseBreakToMinutes = (b?: string) => {
+    if (!b || b === "--") return 0
+    const h = Number.parseInt(b.match(/(\d+)\s*h/i)?.[1] ?? "0", 10)
+    const m = Number.parseInt(b.match(/(\d+)\s*m/i)?.[1] ?? "0", 10)
+    return h * 60 + m
+  }
+
+  // Formats minutes as "HH.MM" to match your pill display (e.g., 07.25 Hrs)
+  const formatProductionValue = (mins: number) => {
+    const h = Math.floor(mins / 60)
+    const m = mins % 60
+    return `${String(h).padStart(2, "0")}.${String(m).padStart(2, "0")}`
+  }
+
+  type PillColor = "green" | "blue" | "red" | "orange"
+  const computeProductionColor = (status: string, workedMins: number): PillColor => {
+    // Absent or no worked time -> red
+    if (status === "Absent" || workedMins <= 0) return "red"
+    // Long day/overtime -> blue (>= 9h)
+    if (workedMins >= 9 * 60) return "blue"
+    // Normal day -> green (>= 7h)
+    if (workedMins >= 7 * 60) return "green"
+    // Short day -> orange
+    return "orange"
+  }
+
+  const editTimes = (rowIndex: number, newCheckIn = "09:00 AM", newCheckOut = "06:00 PM") => {
+    setRows((prev) =>
+      prev.map((r, i) => {
+        if (i !== rowIndex) return r
+
+        const start = toMinutes(START_TIME) ?? 0
+        const inMins = toMinutes(newCheckIn)
+        const outMins = toMinutes(newCheckOut)
+
+        const lateMins = inMins !== null ? inMins - start : 0
+        const nextStatus = inMins !== null && lateMins > 0 ? "Late" : "Present"
+        const nextLate = inMins !== null ? lateLabel(lateMins) : r.late
+
+        // production hours = (checkout - checkin - break)
+        const breakMins = parseBreakToMinutes(r.break)
+        const workedMins = inMins !== null && outMins !== null ? Math.max(outMins - inMins - breakMins, 0) : 0
+        const nextProductionValue = formatProductionValue(workedMins)
+        const nextProductionColor = computeProductionColor(nextStatus, workedMins)
+
+        return {
+          ...r,
+          checkIn: newCheckIn,
+          checkOut: newCheckOut,
+          status: nextStatus,
+          late: nextLate,
+          productionHours: { value: nextProductionValue, color: nextProductionColor },
+          edit: true,
+        }
+      }),
+    )
+  }
+
+  const handleUpdateTimes = () => {
+    if (editIndex === null) return
+    const newIn = formatForm(checkInForm)
+    const newOut = formatForm(checkOutForm)
+    editTimes(editIndex, newIn, newOut)
+    closeModal()
+  }
+
+  const filteredRows = rows.filter((row) => {
+    if (!search) return true
+    const q = search.toLowerCase()
+    return (
+      row.date.toLowerCase().includes(q) ||
+      (row.checkIn || "").toLowerCase().includes(q) ||
+      (row.checkOut || "").toLowerCase().includes(q) ||
+      row.status.toLowerCase().includes(q)
+    )
+  })
 
   return (
     <div
@@ -185,7 +318,7 @@ export default function AttendanceLogTable() {
               <th className="py-5 px-3 text-left" style={{ width: "100px" }}>
                 Break
               </th>
-              <th className="py-5 px-2 text-left" style={{ width: "87px" }}>
+              <th className="py-5 px-3 text-left" style={{ width: "87px" }}>
                 Late
               </th>
               <th className="py-5 px-2 text-left" style={{ width: "100px" }}>
@@ -200,7 +333,7 @@ export default function AttendanceLogTable() {
             </tr>
           </thead>
           <tbody>
-            {mockData.map((row, i) => (
+            {filteredRows.map((row, i) => (
               <tr key={i} className="border-b last:border-b-0 border-[#F3F3F3] text-base">
                 <td className="py-4 px-3 pl-10 text-[#535353]">{row.date}</td>
                 <td className="py-4 px-3 text-[#535353]">{row.checkIn}</td>
@@ -213,7 +346,7 @@ export default function AttendanceLogTable() {
                 <td className="py-4 px-3 text-[#535353]">{row.overtime}</td>
                 <td className="py-4 px-3">
                   <span
-                    className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 bord ${pillColors[row.productionHours.color]}`}
+                    className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 ${pillColors[row.productionHours.color]}`}
                   >
                     {row.productionHours.color === "green" && <FaCheckCircle className="w-4 h-4" color="#19C773" />}
                     {row.productionHours.color === "blue" && <FaClock className="w-4 h-4" color="#37B6E9" />}
@@ -228,6 +361,10 @@ export default function AttendanceLogTable() {
                   {row.edit && (
                     <a
                       href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        openEditModal(i)
+                      }}
                       className="text-[#00A0E3] text-sm hover:underline font-semibold flex items-center gap-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="#37B6E9" strokeWidth={2} viewBox="0 0 24 24">
@@ -242,6 +379,147 @@ export default function AttendanceLogTable() {
           </tbody>
         </table>
       </div>
+
+      {/* Time Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-times-title"
+            className="bg-white rounded-xl shadow-xl w-[760px] max-w-[95%] p-6 relative"
+          >
+            <button
+              aria-label="Close"
+              onClick={closeModal}
+              className="absolute right-4 top-3 text-[#8E8E8E] hover:text-[#4D4D4D]"
+            >
+              ✕
+            </button>
+
+            <h3 id="edit-times-title" className="text-[#4D4D4D] text-xl font-semibold mb-4">
+              Edit Punch In Time
+            </h3>
+
+            <div className="rounded-xl bg-[#06A4E2] px-6 py-5 mb-6 text-white">
+              <div className="flex items-center gap-6">
+                {/* Hours */}
+                <div className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    value={checkInForm.hour}
+                    onChange={(e) =>
+                      setCheckInForm((f) => ({ ...f, hour: pad2(clamp(Number(e.target.value) || 0, 1, 12)) }))
+                    }
+                    className="w-24 text-center text-4xl font-semibold bg-white text-[#0A4B66] rounded-md py-2 no-spinner"
+                  />
+                  <span className="mt-2 text-xs tracking-wider">HOURS</span>
+                </div>
+
+                <span className="text-4xl font-bold opacity-70">|</span>
+
+                {/* Minutes */}
+                <div className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    min={0}
+                    max={59}
+                    value={checkInForm.min}
+                    onChange={(e) =>
+                      setCheckInForm((f) => ({ ...f, min: pad2(clamp(Number(e.target.value) || 0, 0, 59)) }))
+                    }
+                    className="w-24 text-center text-4xl font-semibold bg-white text-[#0A4B66] rounded-md py-2 no-spinner"
+                  />
+                  <span className="mt-2 text-xs tracking-wider">MINS</span>
+                </div>
+
+                {/* AM/PM */}
+                <div className="ml-auto flex items-center gap-2">
+                  {(["AM", "PM"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setCheckInForm((f) => ({ ...f, meridiem: m }))}
+                      className={`px-3 py-2 rounded-md border text-sm ${
+                        checkInForm.meridiem === m
+                          ? "bg-white text-[#06A4E2] border-white"
+                          : "bg-transparent border-white"
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-[#4D4D4D] text-xl font-semibold mb-4">Edit Punch Out Time</h3>
+
+            <div className="rounded-xl bg-[#06A4E2] px-6 py-5 mb-6 text-white">
+              <div className="flex items-center gap-6">
+                {/* Hours */}
+                <div className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    value={checkOutForm.hour}
+                    onChange={(e) =>
+                      setCheckOutForm((f) => ({ ...f, hour: pad2(clamp(Number(e.target.value) || 0, 1, 12)) }))
+                    }
+                    className="w-24 text-center text-4xl font-semibold bg-white text-[#0A4B66] rounded-md py-2 no-spinner"
+                  />
+                  <span className="mt-2 text-xs tracking-wider">HOURS</span>
+                </div>
+
+                <span className="text-4xl font-bold opacity-70">|</span>
+
+                {/* Minutes */}
+                <div className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    min={0}
+                    max={59}
+                    value={checkOutForm.min}
+                    onChange={(e) =>
+                      setCheckOutForm((f) => ({ ...f, min: pad2(clamp(Number(e.target.value) || 0, 0, 59)) }))
+                    }
+                    className="w-24 text-center text-4xl font-semibold bg-white text-[#0A4B66] rounded-md py-2 no-spinner"
+                  />
+                  <span className="mt-2 text-xs tracking-wider">MINS</span>
+                </div>
+
+                {/* AM/PM */}
+                <div className="ml-auto flex items-center gap-2">
+                  {(["AM", "PM"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setCheckOutForm((f) => ({ ...f, meridiem: m }))}
+                      className={`px-3 py-2 rounded-md border text-sm ${
+                        checkOutForm.meridiem === m
+                          ? "bg-white text-[#06A4E2] border-white"
+                          : "bg-transparent border-white"
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleUpdateTimes}
+                className="px-5 py-2 rounded-md border border-[#06A4E2] text-[#06A4E2] hover:bg-[#06A4E2]/5 transition-colors"
+              >
+                Update Time
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
