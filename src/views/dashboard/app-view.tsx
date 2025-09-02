@@ -5,6 +5,7 @@ import Sidebar from "./sidebar.view"
 import LeaveStatus from "../leave/leave-status.view"
 import TeamMembers from "../team/team-members.view"
 import AttendanceLogTable from "../attendance/attendance-log-table.view"
+import TaskTrackerPanel from "../tasks/TaskTrackerPanel.view"
 
 export default function AppView() {
   const [selectedItem, setSelectedItem] = useState("Employee Dashboard")
@@ -38,14 +39,22 @@ export default function AppView() {
             </div>
           </div>
           <div className="p-6">
-            <EmployeeProfile />
-            <div className="mt-8 flex gap-6">
-              <LeaveStatus />
-              <TeamMembers />
-            </div>
-            <div className="mt-8">
-              <AttendanceLogTable />
-            </div>
+            {selectedItem === "Task Tracker" || selectedItem === "Project/Task Tracker" ? (
+              <div className="overflow-auto">
+                <TaskTrackerPanel />
+              </div>
+            ) : (
+              <>
+                <EmployeeProfile />
+                <div className="mt-8 flex gap-6">
+                  <LeaveStatus />
+                  <TeamMembers />
+                </div>
+                <div className="mt-8">
+                  <AttendanceLogTable />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

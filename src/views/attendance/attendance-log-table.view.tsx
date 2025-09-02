@@ -161,7 +161,7 @@ export default function AttendanceLogTable() {
     return h * 60 + m
   }
 
-  // Formats minutes as "HH.MM" to match your pill display (e.g., 07.25 Hrs)
+ 
   const formatProductionValue = (mins: number) => {
     const h = Math.floor(mins / 60)
     const m = mins % 60
@@ -170,13 +170,9 @@ export default function AttendanceLogTable() {
 
   type PillColor = "green" | "blue" | "red" | "orange"
   const computeProductionColor = (status: string, workedMins: number): PillColor => {
-    // Absent or no worked time -> red
     if (status === "Absent" || workedMins <= 0) return "red"
-    // Long day/overtime -> blue (>= 9h)
     if (workedMins >= 9 * 60) return "blue"
-    // Normal day -> green (>= 7h)
     if (workedMins >= 7 * 60) return "green"
-    // Short day -> orange
     return "orange"
   }
 
@@ -346,7 +342,7 @@ export default function AttendanceLogTable() {
                 <td className="py-4 px-3 text-[#535353]">{row.overtime}</td>
                 <td className="py-4 px-3">
                   <span
-                    className={`inline-flex items-center gap-1 text-base rounded-md font-medium px-3 py-1 ${pillColors[row.productionHours.color]}`}
+                    className={`inline-flex items-center gap-1 text-base rounded-md font-medium w-32 px-3 py-1 ${pillColors[row.productionHours.color]}`}
                   >
                     {row.productionHours.color === "green" && <FaCheckCircle className="w-4 h-4" color="#19C773" />}
                     {row.productionHours.color === "blue" && <FaClock className="w-4 h-4" color="#37B6E9" />}
