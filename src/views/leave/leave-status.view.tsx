@@ -39,6 +39,30 @@ export default function LeaveStatus() {
       )
     }
 
+    // Special case for CEO when leave is approved
+    if (role.id === "ceo" && leaveRequest.status === "approved") {
+      return (
+        <div className="absolute z-50 bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg"
+             style={{
+               left: role.labelPosition === "top" ? "-100px" : "-100px",
+               top: role.labelPosition === "top" ? "60px" : "-130px",
+               width: "200px"
+             }}>
+          <div className="text-sm font-semibold text-gray-700 mb-2">Leave viewed CEO</div>
+          <hr className="mb-3 border-gray-200" />
+          <div className="space-y-2">
+            <div className="flex items-center text-sm">
+              <span className="text-green-500 mr-2">✓</span>
+              <span className="text-green-600 font-medium">Leave Approved</span>
+            </div>
+            <div className="text-sm text-center italic text-blue-500 bg-blue-50 p-2 rounded">
+              "Enjoy your break,<br />See you soon!"
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     if (checklistItems[role.id]) {
       return (
         <div className="absolute z-50 bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg"
@@ -193,32 +217,41 @@ export default function LeaveStatus() {
       </div>
 
       <div className="text-right animate-fade-in-up mt-24 mr-12">
-        <p className="text-right text-gray-700 mb-4 text-lg pr-12 font-medium">Check Details, Then Approve or Reject</p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={handleReject}
-            style={{ backgroundColor: "#F34040" }}
-            className="px-6 py-2 text-xl font-medium bg-red-500 hover:bg-red-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-          >
-            Reject Leave
-          </button>
-          {canTransfer() && (
-            <button
-              onClick={handleTransfer}
-              style={{ backgroundColor: "#FF9500" }}
-              className="px-6 py-2 text-xl font-medium hover:bg-orange-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-            >
-              Transfer Request
-            </button>
-          )}
-          <button
-            onClick={handleApprove}
-            style={{ backgroundColor: "#31ED31" }}
-            className="px-6 py-2 text-xl font-medium hover:bg-green-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-          >
-            Approve Leave
-          </button>
-        </div>
+        {leaveRequest.status === "pending" ? (
+          <>
+            <p className="text-right text-gray-700 mb-4 text-lg pr-12 font-medium">Check Details, Then Approve or Reject</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleReject}
+                style={{ backgroundColor: "#F34040" }}
+                className="px-6 py-2 text-xl font-medium bg-red-500 hover:bg-red-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                Reject Leave
+              </button>
+              {canTransfer() && (
+                <button
+                  onClick={handleTransfer}
+                  style={{ backgroundColor: "#FF9500" }}
+                  className="px-6 py-2 text-xl font-medium hover:bg-orange-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                >
+                  Transfer Request
+                </button>
+              )}
+              <button
+                onClick={handleApprove}
+                style={{ backgroundColor: "#31ED31" }}
+                className="px-6 py-2 text-xl font-medium hover:bg-green-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                Approve Leave
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center">
+            <p className="text-2xl font-bold text-green-600 mb-2">Leave Request Approved!</p>
+            <p className="text-lg text-gray-600">Hover over CEO to see the approval message</p>
+          </div>
+        )}
       </div>
 
       <style>{`

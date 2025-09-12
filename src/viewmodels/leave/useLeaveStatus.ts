@@ -198,6 +198,7 @@ export function useLeaveStatus() {
 
   const getPopupTitle = (roleId: string) => {
     if (roleId === "employee") return "Leave Applied"
+    if (roleId === "ceo" && leaveRequest.status === "approved") return "Leave viewed CEO"
     return `Leave viewed\n${roles.find(r => r.id === roleId)?.name || ""}`
   }
 
