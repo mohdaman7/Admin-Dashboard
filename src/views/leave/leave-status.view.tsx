@@ -1,8 +1,102 @@
 import type React from "react"
-import { useLeaveStatus } from "../../viewmodels/leave/useLeaveStatus"
+import { useLeaveStatus, type Role } from "../../viewmodels/leave/useLeaveStatus"
 
 export default function LeaveStatus() {
-  const { roles, lineConnections, hoveredRole, setHoveredRole, lastActiveRoleIndex } = useLeaveStatus()
+  const { 
+    roles, 
+    lineConnections, 
+    hoveredRole, 
+    setHoveredRole, 
+    lastActiveRoleIndex,
+    leaveRequest,
+    checklistItems,
+    handleApprove,
+    handleReject,
+    handleTransfer,
+    canTransfer,
+    toggleChecklistItem,
+    getPopupTitle
+  } = useLeaveStatus()
+
+  const renderHoverPopup = (role: Role) => {
+    if (role.id === "employee") {
+      return (
+        <div className="absolute z-50 bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg"
+             style={{
+               left: role.labelPosition === "top" ? "-50px" : "-50px",
+               top: role.labelPosition === "top" ? "60px" : "-140px",
+               width: "200px",
+               minHeight: "120px"
+             }}>
+          <div className="text-sm font-semibold text-gray-700 mb-2">Leave Applied</div>
+          <hr className="mb-3 border-gray-200" />
+          <div className="space-y-1 text-xs text-gray-600">
+            <div>{leaveRequest.employeeName} {leaveRequest.employeeId}</div>
+            <div>{leaveRequest.leaveType}</div>
+            <div>{leaveRequest.startDate} - {leaveRequest.endDate}</div>
+          </div>
+        </div>
+      )
+    }
+
+    if (checklistItems[role.id]) {
+      return (
+        <div className="absolute z-50 bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg"
+             style={{
+               left: role.labelPosition === "top" ? "-80px" : "-80px",
+               top: role.labelPosition === "top" ? "60px" : "-120px",
+               width: "160px"
+             }}>
+          <div className="text-sm font-semibold text-gray-700 mb-2 whitespace-pre-line">
+            {getPopupTitle(role.id)}
+          </div>
+          <hr className="mb-3 border-gray-200" />
+          <div className="space-y-2">
+            {checklistItems[role.id].map(item => (
+              <label key={item.id} className="flex items-center cursor-pointer text-sm">
+                <input
+                  type="checkbox"
+                  checked={item.checked}
+                  onChange={() => toggleChecklistItem(role.id, item.id)}
+                  className="mr-2 h-3 w-3 text-green-500"
+                />
+                <span className={item.checked ? "text-green-600 line-through" : "text-gray-700"}>
+                  {item.label}
+                </span>
+                {item.checked && <span className="ml-1 text-green-500">✓</span>}
+              </label>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  if (leaveRequest.status !== "pending") {
+    return (
+      <div className="bg-white rounded-lg shadow-sm" style={{ width: "943px", height: "650px", padding: "16px" }}>
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-gray-800 mb-2 p-4 pl-5">Leave Status</h1>
+          <div className="ml-5 w-11/12 h-0.5 bg-blue-200" />
+        </div>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              Leave Request {leaveRequest.status.charAt(0).toUpperCase() + leaveRequest.status.slice(1)}
+            </h2>
+            <p className="text-lg text-gray-600">
+              {leaveRequest.status === "approved" 
+                ? "The leave request has been approved successfully." 
+                : "The leave request has been rejected."}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  function
 
   return (
     <div className="bg-white rounded-lg shadow-sm" style={{ width: "943px", height: "650px", padding: "16px" }}>
@@ -45,7 +139,7 @@ export default function LeaveStatus() {
             onMouseEnter={() => setHoveredRole(role.id)}
             onMouseLeave={() => setHoveredRole(null)}
           >
-            <div className="flex flex-col items-center cursor-pointer">
+            <div className="flex flex-col items-center cursor-pointer relative">
               {role.labelPosition === "top" && (
                 <span
                   className={`mb-2 text-base font-semibold transition-all duration-300 ${
@@ -91,6 +185,9 @@ export default function LeaveStatus() {
                   {role.name}
                 </span>
               )}
+
+              {/* Hover Popup */}
+              {hoveredRole === role.id && renderHoverPopup(role)}
             </div>
           </div>
         ))}
@@ -98,14 +195,25 @@ export default function LeaveStatus() {
 
       <div className="text-right animate-fade-in-up mt-24 mr-12">
         <p className="text-right text-gray-700 mb-4 text-lg pr-12 font-medium">Check Details, Then Approve or Reject</p>
-        <div className="flex justify-end gap-3 ">
+        <div className="flex justify-end gap-3">
           <button
+            onClick={handleReject}
             style={{ backgroundColor: "#F34040" }}
             className="px-6 py-2 text-xl font-medium bg-red-500 hover:bg-red-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
             Reject Leave
           </button>
+          {canTransfer() && (
+            <button
+              onClick={handleTransfer}
+              style={{ backgroundColor: "#FF9500" }}
+              className="px-6 py-2 text-xl font-medium hover:bg-orange-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+            >
+              Transfer Request
+            </button>
+          )}
           <button
+            onClick={handleApprove}
             style={{ backgroundColor: "#31ED31" }}
             className="px-6 py-2 text-xl font-medium hover:bg-green-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
           >

@@ -1,8 +1,77 @@
 import { useMemo, useState } from "react"
-import type { Role, LineConnection } from "../../models/leave"
+
+export interface Role {
+  id: string
+  name: string
+  position: React.CSSProperties
+  status: "approved" | "pending" | "inactive"
+  image: string
+  fallback: string
+  labelPosition: "top" | "bottom"
+}
+
+export interface LineConnection {
+  src: string
+  srcGreen?: string
+  from?: number
+  to?: number
+  style: React.CSSProperties
+}
+
+export interface LeaveRequest {
+  employeeName: string
+  employeeId: string
+  leaveDays: number
+  leaveType: string
+  startDate: string
+  endDate: string
+  reason: string
+  currentApprover: string
+  status: "pending" | "approved" | "rejected"
+}
+
+export interface ChecklistItem {
+  id: string
+  label: string
+  checked: boolean
+}
 
 export function useLeaveStatus() {
   const [hoveredRole, setHoveredRole] = useState<string | null>(null)
+  const [leaveRequest, setLeaveRequest] = useState<LeaveRequest>({
+    employeeName: "Amal Ahammed",
+    employeeId: "SD201",
+    leaveDays: 6,
+    leaveType: "Casual Leave",
+    startDate: "25/08/2025",
+    endDate: "30/08/2025",
+    reason: "Personal work",
+    currentApprover: "teamlead",
+    status: "pending"
+  })
+
+  // Checklist items for each role
+  const [checklistItems, setChecklistItems] = useState<Record<string, ChecklistItem[]>>({
+    teamlead: [
+      { id: "workload", label: "Workload", checked: false },
+      { id: "impact", label: "Project Impact", checked: false },
+      { id: "availability", label: "Team availability", checked: false }
+    ],
+    projectlead: [
+      { id: "team-availability", label: "Team availability", checked: false },
+      { id: "project-deadlines", label: "Project deadlines", checked: false }
+    ],
+    hr: [
+      { id: "leave-balance", label: "Leave balance", checked: false },
+      { id: "documentation", label: "Documentation", checked: false }
+    ],
+    ceo: [
+      { id: "business-impact", label: "Business Impact", checked: false },
+      { id: "strategic-planning", label: "Strategic Planning", checked: false }
+    ]
+  })
+
+  const roleHierarchy = ["employee", "teamlead", "projectlead", "hr", "ceo"]
 
   const roles: Role[] = useMemo(
     () => [
@@ -19,7 +88,7 @@ export function useLeaveStatus() {
         id: "teamlead",
         name: "Team Lead",
         position: { left: "15.5rem", top: "14rem" },
-        status: "approved",
+        status: leaveRequest.currentApprover === "teamlead" ? "pending" : "approved",
         image: "/public/profile-img-6.jpg",
         fallback: "TL",
         labelPosition: "bottom",
@@ -28,7 +97,8 @@ export function useLeaveStatus() {
         id: "projectlead",
         name: "Project Lead",
         position: { left: "47%", top: "0.5rem", transform: "translateX(-50%)" },
-        status: "approved",
+        status: leaveRequest.currentApprover === "projectlead" ? "pending" : 
+               roleHierarchy.indexOf(leaveRequest.currentApprover) > roleHierarchy.indexOf("projectlead") ? "approved" : "inactive",
         image: "/public/profile-img-6.jpg",
         fallback: "PL",
         labelPosition: "top",
@@ -37,7 +107,8 @@ export function useLeaveStatus() {
         id: "hr",
         name: "HR",
         position: { right: "14.2rem", top: "13.3rem" },
-        status: "pending",
+        status: leaveRequest.currentApprover === "hr" ? "pending" :
+               roleHierarchy.indexOf(leaveRequest.currentApprover) > roleHierarchy.indexOf("hr") ? "approved" : "inactive",
         image: "/public/profile-img-6.jpg",
         fallback: "HR",
         labelPosition: "bottom",
@@ -46,13 +117,13 @@ export function useLeaveStatus() {
         id: "ceo",
         name: "CEO",
         position: { right: "4.2rem", top: "4rem" },
-        status: "pending",
+        status: leaveRequest.currentApprover === "ceo" ? "pending" : "inactive",
         image: "/public/profile-img-6.jpg",
         fallback: "CEO",
         labelPosition: "top",
       },
     ],
-    [],
+    [leaveRequest.currentApprover],
   )
 
   const lineConnections: LineConnection[] = useMemo(
@@ -84,9 +155,51 @@ export function useLeaveStatus() {
   )
 
   const lastActiveRoleIndex = useMemo(
-    () => roles.reduce((acc, role, idx) => (role.status === "approved" ? idx : acc), -1),
-    [roles],
+    () => {
+      const currentIndex = roleHierarchy.indexOf(leaveRequest.currentApprover)
+      return Math.max(0, currentIndex - 1)
+    },
+    [leaveRequest.currentApprover],
   )
+
+  const handleApprove = () => {
+    setLeaveRequest(prev => ({ ...prev, status: "approved" }))
+  }
+
+  const handleReject = () => {
+    setLeaveRequest(prev => ({ ...prev, status: "rejected" }))
+  }
+
+  const handleTransfer = () => {
+    const currentIndex = roleHierarchy.indexOf(leaveRequest.currentApprover)
+    const nextRole = roleHierarchy[currentIndex + 1]
+    
+    if (nextRole) {
+      setLeaveRequest(prev => ({
+        ...prev,
+        currentApprover: nextRole
+      }))
+    }
+  }
+
+  const canTransfer = () => {
+    const currentIndex = roleHierarchy.indexOf(leaveRequest.currentApprover)
+    return currentIndex < roleHierarchy.length - 1 && leaveRequest.status === "pending"
+  }
+
+  const toggleChecklistItem = (roleId: string, itemId: string) => {
+    setChecklistItems(prev => ({
+      ...prev,
+      [roleId]: prev[roleId].map(item =>
+        item.id === itemId ? { ...item, checked: !item.checked } : item
+      )
+    }))
+  }
+
+  const getPopupTitle = (roleId: string) => {
+    if (roleId === "employee") return "Leave Applied"
+    return `Leave viewed\n${roles.find(r => r.id === roleId)?.name || ""}`
+  }
 
   return {
     roles,
@@ -94,5 +207,13 @@ export function useLeaveStatus() {
     hoveredRole,
     setHoveredRole,
     lastActiveRoleIndex,
+    leaveRequest,
+    checklistItems,
+    handleApprove,
+    handleReject,
+    handleTransfer,
+    canTransfer,
+    toggleChecklistItem,
+    getPopupTitle
   }
 }
