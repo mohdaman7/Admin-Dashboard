@@ -96,7 +96,6 @@ export default function LeaveStatus() {
       </div>
     )
   }
-  function
 
   return (
     <div className="bg-white rounded-lg shadow-sm" style={{ width: "943px", height: "650px", padding: "16px" }}>
