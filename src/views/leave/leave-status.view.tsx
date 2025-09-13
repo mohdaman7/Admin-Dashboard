@@ -1,22 +1,28 @@
-import type React from "react"
-import { useLeaveStatus, type Role } from "../../viewmodels/leave/useLeaveStatus"
+import React from "react";
+import { useLeaveStatus, type Role, type TransferRecord } from "../../viewmodels/leave/useLeaveStatus";
 
 export default function LeaveStatus() {
-  const { 
-    roles, 
-    lineConnections, 
-    hoveredRole, 
-    setHoveredRole, 
-    lastActiveRoleIndex,
+  const {
+    hoveredRole,
+    setHoveredRole,
+    showTransferPopup,
+    setShowTransferPopup,
+    latestTransfer,
     leaveRequest,
     checklistItems,
+    roles,
+    lineConnections,
+    lastActiveRoleIndex,
+    roleNames,
+    CURRENT_USER_ROLE,
+    hasPermission,
     handleApprove,
     handleReject,
     handleTransfer,
     canTransfer,
     toggleChecklistItem,
     getPopupTitle
-  } = useLeaveStatus()
+  } = useLeaveStatus();
 
   const renderHoverPopup = (role: Role) => {
     if (role.id === "employee") {
@@ -36,7 +42,7 @@ export default function LeaveStatus() {
             <div>{leaveRequest.startDate} - {leaveRequest.endDate}</div>
           </div>
         </div>
-      )
+      );
     }
 
     // Special case for CEO when leave is approved
@@ -60,7 +66,7 @@ export default function LeaveStatus() {
             </div>
           </div>
         </div>
-      )
+      );
     }
 
     if (checklistItems[role.id]) {
@@ -83,6 +89,7 @@ export default function LeaveStatus() {
                   checked={item.checked}
                   onChange={() => toggleChecklistItem(role.id, item.id)}
                   className="mr-2 h-3 w-3 text-green-500"
+                  disabled={!hasPermission('canView')}
                 />
                 <span className={item.checked ? "text-green-600 line-through" : "text-gray-700"}>
                   {item.label}
@@ -92,15 +99,54 @@ export default function LeaveStatus() {
             ))}
           </div>
         </div>
-      )
+      );
     }
 
-    return null
-  }
+    return null;
+  };
+
+  // Transfer Notification Popup
+  const TransferPopup = () => (
+    <div className={`fixed top-4 right-4 z-50 bg-white border-l-4 border-orange-500 rounded-lg shadow-xl p-4 transform transition-all duration-300 ${
+      showTransferPopup ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+    }`} style={{ width: '350px' }}>
+      <div className="flex items-start">
+        <div className="flex-shrink-0">
+          <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+            <span className="text-orange-600 text-sm font-bold">→</span>
+          </div>
+        </div>
+        <div className="ml-3 flex-1">
+          <h3 className="text-sm font-semibold text-gray-900 mb-1">Request Transferred</h3>
+          {latestTransfer && (
+            <div className="text-sm text-gray-600">
+              <p className="mb-1">From: <span className="font-medium text-gray-800">{latestTransfer.fromRoleName}</span></p>
+              <p className="mb-1">To: <span className="font-medium text-gray-800">{latestTransfer.toRoleName}</span></p>
+              <p className="text-xs text-gray-500">{latestTransfer.timestamp}</p>
+            </div>
+          )}
+        </div>
+        <button 
+          onClick={() => setShowTransferPopup(false)}
+          className="ml-2 text-gray-400 hover:text-gray-600"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+
+  // Current User Role Indicator
+  const RoleIndicator = () => (
+    <div className="absolute top-4 left-4 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+      Current Role: {roleNames[CURRENT_USER_ROLE as keyof typeof roleNames]}
+    </div>
+  );
 
   if (leaveRequest.status !== "pending") {
     return (
-      <div className="bg-white rounded-lg shadow-sm" style={{ width: "943px", height: "650px", padding: "16px" }}>
+      <div className="bg-white rounded-lg shadow-sm relative" style={{ width: "943px", height: "650px", padding: "16px" }}>
+        <TransferPopup />
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-800 mb-2 p-4 pl-5">Leave Status</h1>
           <div className="ml-5 w-11/12 h-0.5 bg-blue-200" />
@@ -110,19 +156,35 @@ export default function LeaveStatus() {
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               Leave Request {leaveRequest.status.charAt(0).toUpperCase() + leaveRequest.status.slice(1)}
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 mb-6">
               {leaveRequest.status === "approved" 
                 ? "The leave request has been approved successfully." 
                 : "The leave request has been rejected."}
             </p>
+            
+            {leaveRequest.transferHistory.length > 0 && (
+              <div className="mt-6 bg-gray-50 rounded-lg p-4 max-w-md mx-auto">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Transfer History</h3>
+                <div className="space-y-2">
+                  {leaveRequest.transferHistory.map((transfer: TransferRecord, index: number) => (
+                    <div key={index} className="text-sm text-gray-600 bg-white rounded p-2">
+                      <span className="font-medium">{transfer.fromRoleName}</span> → <span className="font-medium">{transfer.toRoleName}</span>
+                      <div className="text-xs text-gray-500 mt-1">{transfer.timestamp}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm" style={{ width: "943px", height: "650px", padding: "16px" }}>
+    <div className="bg-white rounded-lg shadow-sm relative" style={{ width: "943px", height: "650px", padding: "16px" }}>
+      <TransferPopup />
+      
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-800 mb-2 p-4 pl-5">Leave Status</h1>
         <div className="ml-5 w-11/12 h-0.5 bg-blue-200" />
@@ -167,17 +229,18 @@ export default function LeaveStatus() {
                 <span
                   className={`mb-2 text-base font-semibold transition-all duration-300 ${
                     hoveredRole === role.id ? "text-blue-600 transform -translate-y-0.5" : "text-gray-700"
-                  }`}
+                  } ${role.id === CURRENT_USER_ROLE ? "text-blue-600 font-bold" : ""}`}
                 >
                   {role.name}
+                  {role.id === CURRENT_USER_ROLE && <span className="text-xs ml-1">(You)</span>}
                 </span>
               )}
 
               <div className="relative leave-avatar-wrapper">
                 <div
                   className={`leave-avatar
-                    ${role.status === "approved" ? "leave-avatar-approved" : ""}
-                    ${role.status === "pending" ? "leave-avatar-pending" : ""}
+                    ${role.status === "approved" ? "leave-avatar-approved" : "leave-avatar-pending"}
+                    ${role.id === CURRENT_USER_ROLE ? "leave-avatar-current-user" : ""}
                     ${hoveredRole === role.id ? "shadow-xl" : ""}
                   `}
                 >
@@ -186,13 +249,13 @@ export default function LeaveStatus() {
                     alt={role.name}
                     className="w-full h-full object-cover"
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                      const img = e.currentTarget
-                      img.style.display = "none"
-                      const parent = img.parentElement
+                      const img = e.currentTarget;
+                      img.style.display = "none";
+                      const parent = img.parentElement;
                       if (parent) {
                         parent.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xs font-medium ${
                           role.status === "approved" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-                        }">${role.fallback}</div>`
+                        }">${role.fallback}</div>`;
                       }
                     }}
                   />
@@ -203,9 +266,10 @@ export default function LeaveStatus() {
                 <span
                   className={`mt-2 text-base font-semibold transition-all duration-300 ${
                     hoveredRole === role.id ? "text-blue-600 transform -translate-y-0.5" : "text-gray-700"
-                  }`}
+                  } ${role.id === CURRENT_USER_ROLE ? "text-blue-600 font-bold" : ""}`}
                 >
                   {role.name}
+                  {role.id === CURRENT_USER_ROLE && <span className="text-xs ml-1">(You)</span>}
                 </span>
               )}
 
@@ -219,12 +283,21 @@ export default function LeaveStatus() {
       <div className="text-right animate-fade-in-up mt-24 mr-12">
         {leaveRequest.status === "pending" ? (
           <>
-            <p className="text-right text-gray-700 mb-4 text-lg pr-12 font-medium">Check Details, Then Approve or Reject</p>
+            <p className="text-right text-gray-700 mb-4 text-lg pr-12 font-medium">
+              {CURRENT_USER_ROLE === leaveRequest.currentApprover 
+                ? "Check Details, Then Approve or Reject" 
+                : "Waiting for current approver to take action"}
+            </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleReject}
-                style={{ backgroundColor: "#F34040" }}
-                className="px-6 py-2 text-xl font-medium bg-red-500 hover:bg-red-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                disabled={!hasPermission('canReject')}
+                style={{ backgroundColor: hasPermission('canReject') ? "#F34040" : "#9CA3AF" }}
+                className={`px-6 py-2 text-xl font-medium text-white rounded-md shadow-lg transition-all duration-300 ${
+                  hasPermission('canReject') 
+                    ? "hover:bg-red-600 hover:shadow-xl transform hover:scale-105 active:scale-95" 
+                    : "cursor-not-allowed"
+                }`}
               >
                 Reject Leave
               </button>
@@ -239,8 +312,13 @@ export default function LeaveStatus() {
               )}
               <button
                 onClick={handleApprove}
-                style={{ backgroundColor: "#31ED31" }}
-                className="px-6 py-2 text-xl font-medium hover:bg-green-600 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                disabled={!hasPermission('canApprove')}
+                style={{ backgroundColor: hasPermission('canApprove') ? "#31ED31" : "#9CA3AF" }}
+                className={`px-6 py-2 text-xl font-medium text-white rounded-md shadow-lg transition-all duration-300 ${
+                  hasPermission('canApprove') 
+                    ? "hover:bg-green-600 hover:shadow-xl transform hover:scale-105 active:scale-95" 
+                    : "cursor-not-allowed"
+                }`}
               >
                 Approve Leave
               </button>
@@ -264,10 +342,30 @@ export default function LeaveStatus() {
         .animate-scale-in { animation: scaleIn 0.5s ease-out both; }
         .animate-fade-in-up { animation: fadeInUp 0.6s ease-out 2s both; }
         .leave-avatar-wrapper { padding: 6px; background: transparent; }
-        .leave-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, border 0.3s; border: 2.5px solid #fff; }
-        .leave-avatar-approved { box-shadow: 0 0 18px 6px #6EFF86; }
-        .leave-avatar-pending { box-shadow: 0 0 18px 4px #2224; }
+        .leave-avatar { 
+          width: 40px; 
+          height: 40px; 
+          border-radius: 50%; 
+          overflow: hidden; 
+          background: #fff; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          transition: box-shadow 0.3s, border 0.3s; 
+          border: 3px solid #fff; 
+        }
+        .leave-avatar-approved { 
+          box-shadow: 0 0 18px 6px #6EFF86; 
+          border: 2px solid #fff;
+        }
+        .leave-avatar-pending { 
+          box-shadow: 0 0 20px 8px rgba(0, 0, 0, 0.3); 
+          border: 2px solid #fff;
+        }
+        .leave-avatar-current-user { 
+          border: 3px solid #3B82F6; 
+        }
       `}</style>
     </div>
-  )
+  );
 }
