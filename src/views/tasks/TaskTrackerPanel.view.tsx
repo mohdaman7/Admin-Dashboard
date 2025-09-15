@@ -1,6 +1,4 @@
-import React from "react";
 
-// Chip Component
 type ChipProps = {
   children: React.ReactNode;
   variant?: "gray" | "blue" | "red" | "green" | "orange";
